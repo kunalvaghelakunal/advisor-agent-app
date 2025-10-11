@@ -1,4 +1,4 @@
-# AI Agent for Financial Advisors — FULL VERSION (Gemini)
+# AI Agent for Financial Advisors 
 
 Stack:
 - **Frontend**: Next.js 14 + NextAuth (Google OAuth), responsive Chat UI
