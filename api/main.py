@@ -13,7 +13,7 @@ if not GEMINI_API_KEY:
     raise RuntimeError("Missing GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
-MODEL_NAME = os.getenv("GEMINI_MODEL", "models/gemini-1.5-flash")
+MODEL_NAME = os.getenv("GEMINI_MODEL", "models/gemini-2.0-flash")
 model = genai.GenerativeModel(MODEL_NAME)
 
 app = FastAPI(title="Advisor Agent API (Gemini, Full)")
