@@ -2,6 +2,9 @@
   "name": "advisor-agent-web-full",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,5 +15,10 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "next-auth": "^4.24.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/react": "^18.2.15",
+    "@types/node": "^20.11.30"
   }
 }
