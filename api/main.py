@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, Depends
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
@@ -16,6 +17,14 @@ MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 model = genai.GenerativeModel(MODEL_NAME, tools=TOOL_SCHEMAS)
 
 app = FastAPI(title="Advisor Agent API (Gemini, Full)")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ChatIn(BaseModel):
     message: str
