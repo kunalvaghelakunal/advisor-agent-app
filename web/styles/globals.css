@@ -1,9 +1,82 @@
+/* --------------------------------------------- */
+/* Tailwind base styles                          */
+/* --------------------------------------------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------------------------------- */
+/* Global resets                                 */
+/* --------------------------------------------- */
+html,
 body {
-  @apply bg-gray-50 text-gray-800 font-sans;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  @apply bg-gray-50 text-gray-800;
 }
 
+/* --------------------------------------------- */
+/* Scrollbar styling (hide for chat window)      */
+/* --------------------------------------------- */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 
+/* --------------------------------------------- */
+/* Chat bubble styling                           */
+/* --------------------------------------------- */
+.chat-bubble-user {
+  @apply bg-blue-50 text-right text-gray-800 rounded-xl px-3 py-2 ml-10 shadow-sm;
+}
+
+.chat-bubble-assistant {
+  @apply bg-gray-100 text-left text-gray-800 rounded-xl px-3 py-2 mr-10 shadow-sm;
+}
+
+/* --------------------------------------------- */
+/* Input field and buttons                       */
+/* --------------------------------------------- */
+.chat-input {
+  @apply flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.chat-send-btn {
+  @apply px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors;
+}
+
+/* --------------------------------------------- */
+/* Meeting card design (for AI results)          */
+/* --------------------------------------------- */
+.meeting-card {
+  @apply bg-white border rounded-xl shadow-sm p-3 mt-3;
+}
+
+.meeting-time {
+  @apply text-xs text-gray-400 mb-1;
+}
+
+.meeting-title {
+  @apply text-sm font-semibold text-gray-900;
+}
+
+/* --------------------------------------------- */
+/* Header & context bar                          */
+/* --------------------------------------------- */
+.header-tab-active {
+  @apply text-gray-900 font-semibold border-b-2 border-blue-600 pb-1;
+}
+
+.header-tab {
+  @apply text-gray-500 hover:text-gray-700;
+}
+
+.context-bar {
+  @apply text-center text-xs text-gray-500 py-2 border-b;
+}
