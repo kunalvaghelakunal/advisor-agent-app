@@ -85,12 +85,17 @@ def hubspot_callback(code: str):
 @app.get("/google/calendar/events")
 async def get_calendar_events(request: Request):
     try:
-        # Retrieve Google OAuth tokens for the current user
-        user_token = request.cookies.get("google_access_token")
-        if not user_token:
-            return {"error": "No Google token found"}
+        # 1️⃣ Get token from cookies or headers
+        access_token = request.headers.get("Authorization")
+        if access_token and access_token.startswith("Bearer "):
+            access_token = access_token.split("Bearer ")[1]
+        elif "google_access_token" in request.cookies:
+            access_token = request.cookies["google_access_token"]
+        else:
+            return {"error": "Missing Google token"}
 
-        creds = Credentials(token=user_token)
+        # 2️⃣ Use the token to call Google Calendar API
+        creds = Credentials(token=access_token)
         service = build("calendar", "v3", credentials=creds)
 
         events_result = (
@@ -103,16 +108,13 @@ async def get_calendar_events(request: Request):
             )
             .execute()
         )
+
         events = []
         for e in events_result.get("items", []):
             start = e["start"].get("dateTime", e["start"].get("date"))
             end = e["end"].get("dateTime", e["end"].get("date"))
             events.append(
-                {
-                    "summary": e.get("summary", "No title"),
-                    "start": start,
-                    "end": end,
-                }
+                {"summary": e.get("summary", "No title"), "start": start, "end": end}
             )
 
         return {"events": events}
