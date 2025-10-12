@@ -8,11 +8,22 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: process.env.GOOGLE_OAUTH_SCOPES || "openid email profile"
-        }
-      }
-    })
+          scope:
+            "openid email profile https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar.readonly",
+        },
+      },
+    }),
   ],
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token.access_token = account.access_token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.token = token; // 👈 exposes access_token in /api/auth/session
+      return session;
+    },
+  },
 });
