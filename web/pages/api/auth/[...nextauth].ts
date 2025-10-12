@@ -22,8 +22,9 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.token = token; // 👈 exposes access_token in /api/auth/session
-      return session;
-    },
+  (session as any).token = token; // 👈 TypeScript fix: extend session safely
+  return session;
+},
+
   },
 });
