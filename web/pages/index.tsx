@@ -19,49 +19,71 @@ export default function Home() {
   setInput("");
 
   try {
-    // 1️⃣ Detect if user wants Google Calendar meetings
+    // 🧠 Get Google access token from NextAuth session
+    const sessionRes = await fetch("/api/auth/session");
+    const sessionData = await sessionRes.json();
+    const token =
+      sessionData?.token?.access_token ||
+      sessionData?.accessToken ||
+      sessionData?.user?.accessToken;
+
+    // 🕒 If user asks about meetings/calendar
     if (/meeting|calendar|schedule/i.test(text)) {
-      const res = await fetch(`${API_URL}/google/calendar/events`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.events?.length) {
-          const formatted = data.events
-            .map(
-              (e: any) =>
-                `📅 ${e.summary || "No title"} — ${e.start} → ${e.end}`
-            )
-            .join("\n");
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: `Here are your upcoming meetings:\n\n${formatted}` },
-          ]);
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: "No upcoming meetings found in Google Calendar." },
-          ]);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/google/calendar/events`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
         }
+      );
+
+      const data = await res.json();
+      if (data.error) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: `⚠️ ${data.error}` },
+        ]);
+      } else if (data.events?.length) {
+        const formatted = data.events
+          .map(
+            (e: any) =>
+              `📅 ${e.summary || "No title"} — ${e.start} → ${e.end}`
+          )
+          .join("\n");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `Here are your upcoming meetings:\n\n${formatted}`,
+          },
+        ]);
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "❌ Unable to fetch meetings. Please reconnect Google." },
+          {
+            role: "assistant",
+            content: "No upcoming meetings found in Google Calendar.",
+          },
         ]);
       }
     } else {
-      // 2️⃣ Fallback to your existing chat API for normal questions
-      const res = await fetch(`${API_URL}/chat`, {
+      // 💬 Regular chat flow
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply },
+      ]);
     }
   } catch (err) {
+    console.error("Chat error:", err);
     setMessages((prev) => [
       ...prev,
       { role: "assistant", content: "⚠️ Error contacting server." },
@@ -69,6 +91,7 @@ export default function Home() {
   }
   setLoading(false);
 }
+
 
 
   async function connectHubspot() {
