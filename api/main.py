@@ -80,3 +80,43 @@ def hubspot_callback(code: str):
     # Exchange code for token (stubbed)
     # In production, POST to https://api.hubapi.com/oauth/v1/token
     return {"status": "ok", "code": code, "note": "Exchange this code for tokens server-side."}
+
+
+@app.get("/google/calendar/events")
+async def get_calendar_events(request: Request):
+    try:
+        # Retrieve Google OAuth tokens for the current user
+        user_token = request.cookies.get("google_access_token")
+        if not user_token:
+            return {"error": "No Google token found"}
+
+        creds = Credentials(token=user_token)
+        service = build("calendar", "v3", credentials=creds)
+
+        events_result = (
+            service.events()
+            .list(
+                calendarId="primary",
+                maxResults=5,
+                singleEvents=True,
+                orderBy="startTime",
+            )
+            .execute()
+        )
+        events = []
+        for e in events_result.get("items", []):
+            start = e["start"].get("dateTime", e["start"].get("date"))
+            end = e["end"].get("dateTime", e["end"].get("date"))
+            events.append(
+                {
+                    "summary": e.get("summary", "No title"),
+                    "start": start,
+                    "end": end,
+                }
+            )
+
+        return {"events": events}
+    except Exception as e:
+        print("Error fetching events:", e)
+        return {"error": str(e)}
+
