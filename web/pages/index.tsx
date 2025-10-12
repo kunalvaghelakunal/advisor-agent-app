@@ -11,29 +11,65 @@ export default function Home() {
   const [hubspotConnected, setHubspotConnected] = useState(false);
 
   async function sendMessage() {
-    if (!input.trim()) return;
-    setLoading(true);
-    const userMsg = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
+  if (!input.trim()) return;
+  const text = input.trim();
+  setLoading(true);
+  const userMsg = { role: "user", content: text };
+  setMessages((prev) => [...prev, userMsg]);
+  setInput("");
 
-    try {
+  try {
+    // 1️⃣ Detect if user wants Google Calendar meetings
+    if (/meeting|calendar|schedule/i.test(text)) {
+      const res = await fetch(`${API_URL}/google/calendar/events`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.events?.length) {
+          const formatted = data.events
+            .map(
+              (e: any) =>
+                `📅 ${e.summary || "No title"} — ${e.start} → ${e.end}`
+            )
+            .join("\n");
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: `Here are your upcoming meetings:\n\n${formatted}` },
+          ]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: "No upcoming meetings found in Google Calendar." },
+          ]);
+        }
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "❌ Unable to fetch meetings. Please reconnect Google." },
+        ]);
+      }
+    } else {
+      // 2️⃣ Fallback to your existing chat API for normal questions
       const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg.content }),
+        body: JSON.stringify({ message: text }),
       });
       const data = await res.json();
-      const aiMsg = { role: "assistant", content: data.reply };
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ Error contacting server." },
-      ]);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
     }
-    setLoading(false);
+  } catch (err) {
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "⚠️ Error contacting server." },
+    ]);
   }
+  setLoading(false);
+}
+
 
   async function connectHubspot() {
     window.location.href = `${API_URL}/oauth/hubspot/initiate`;
