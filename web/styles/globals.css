@@ -1,40 +1,87 @@
-/* Reset & base */
+/* Base reset */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f6f7f9;
-  color: #333;
+  background-color: #f7f7f8;
 }
 
-/* Layout */
+/* App container */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 750px;
+  max-width: 850px;
   margin: 0 auto;
-  background: #ffffff;
-  border: 1px solid #e2e2e2;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
 /* Header */
 .chat-header {
-  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
   border-bottom: 1px solid #e3e3e3;
   background: #fafafa;
-  font-weight: 600;
-  text-align: center;
+}
+
+.chat-header h1 {
+  font-size: 18px;
+  margin: 0;
+  color: #111;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome {
+  font-size: 14px;
+  color: #444;
+}
+
+/* Buttons */
+.btn {
+  background: #0078ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn:hover {
+  background: #0064d1;
+}
+
+.btn.connected {
+  background: #009e47;
+}
+
+.btn.connected:hover {
+  background: #00853b;
 }
 
 /* Chat window */
 .chat-window {
   flex: 1;
-  padding: 16px;
   overflow-y: auto;
-  background-color: #f9fafb;
+  padding: 16px;
+  background-color: #f7f7f8;
+}
+
+/* Placeholder */
+.placeholder {
+  color: #888;
+  text-align: center;
+  margin-top: 40px;
 }
 
 /* Chat bubbles */
@@ -62,12 +109,10 @@ html, body {
   margin-right: auto;
 }
 
-/* Typing indicator */
 .typing {
   font-size: 14px;
   color: #777;
   margin: 8px;
-  text-align: left;
 }
 
 /* Input area */
@@ -112,11 +157,10 @@ html, body {
   cursor: not-allowed;
 }
 
-/* Scroll behavior */
+/* Scrollbar */
 .chat-window::-webkit-scrollbar {
   width: 6px;
 }
-
 .chat-window::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
