@@ -16,15 +16,18 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }) {
+      // When the user first signs in
       if (account) {
-        token.access_token = account.access_token;
+        token.accessToken = account.access_token;
+        token.idToken = account.id_token;
       }
       return token;
     },
     async session({ session, token }) {
-  (session as any).token = token; // 👈 TypeScript fix: extend session safely
-  return session;
-},
-
+      // Attach access token to session so frontend can use it
+      (session as any).accessToken = token.accessToken;
+      (session as any).idToken = token.idToken;
+      return session;
+    },
   },
 });
